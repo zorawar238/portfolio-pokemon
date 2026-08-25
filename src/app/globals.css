@@ -1,26 +1,120 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-panel-border: var(--panel-border);
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-pixel: var(--font-pixel);
+}
+
+:root {
+  /* GBA Pokemon FireRed/LeafGreen Palette */
+  --background: #E8E0C5; /* Cream dialogue background */
+  --surface: #F8F0E3;    /* Lighter cream */
+  --primary: #D14037;    /* Pokemon Red */
+  --secondary: #3B70A1;  /* Water/Blue */
+  --accent: #E3B044;     /* Electric/Yellow */
+  --text: #2A2A2A;       /* Dark text */
+  --muted: #7A7A7A;      /* Gray text */
+  --success: #65A85A;    /* Grass green */
+  --warning: #D89030;    
+  --error: #D14037;
+  --panel-border: #1E3150; /* Dark Navy border used in UI */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --surface: #1e293b;
+    --primary: #ef4444;
+    --secondary: #3b82f6;
+    --accent: #fbbf24;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --panel-border: #475569;
   }
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Game-Inspired Panel Utilities */
+@layer components {
+  /* Classic GBA Dialogue Box */
+  .panel {
+    @apply bg-surface text-text relative p-4 transition-transform duration-200;
+    border: 4px solid var(--panel-border);
+    border-radius: 8px;
+    box-shadow: inset -2px -2px 0px rgba(0,0,0,0.1), 4px 4px 0px rgba(0,0,0,0.1);
+  }
+  
+  .panel-interactive {
+    @apply bg-surface text-text relative p-4 transition-transform duration-200 cursor-pointer;
+    border: 4px solid var(--panel-border);
+    border-radius: 8px;
+    box-shadow: inset -2px -2px 0px rgba(0,0,0,0.1), 4px 4px 0px rgba(0,0,0,0.1);
+  }
+  
+  .panel-interactive:hover {
+    @apply -translate-y-1;
+    box-shadow: inset -2px -2px 0px rgba(0,0,0,0.1), 6px 6px 0px rgba(0,0,0,0.15);
+  }
+
+  .panel-interactive:active {
+    @apply translate-y-0;
+    box-shadow: inset -2px -2px 0px rgba(0,0,0,0.1), 2px 2px 0px rgba(0,0,0,0.05);
+  }
+
+  .panel-inset {
+    @apply bg-[#D0D0D0] border-2 border-panel-border rounded-sm p-4;
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .pixel-text {
+    font-family: var(--font-pixel), monospace;
+    @apply tracking-wide text-xs leading-relaxed;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+  }
+  
+  .pixel-text-lg {
+    font-family: var(--font-pixel), monospace;
+    @apply tracking-wide text-base leading-relaxed;
+  }
+  
+  .pixel-border {
+    /* Pure CSS pixel art border approach */
+    box-shadow: 
+      -4px 0 0 0 var(--panel-border),
+      4px 0 0 0 var(--panel-border),
+      0 -4px 0 0 var(--panel-border),
+      0 4px 0 0 var(--panel-border);
+    margin: 4px;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-50vw);
+  }
+  to {
+    transform: translateX(150vw);
+  }
 }
