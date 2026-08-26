@@ -3,7 +3,7 @@ import { developerData } from '@/data/developer';
 
 export default function PokemonCenter({ onClose }: { onClose?: () => void }) {
   return (
-    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center p-4 md:p-8 z-50 overflow-hidden">
+    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center p-4 md:p-8 z-50 overflow-hidden pointer-events-auto">
       <div className="w-full max-w-4xl h-full max-h-[600px] flex flex-col gap-4 relative">
         
         {/* Top: Pokemon Center Interior */}
@@ -23,6 +23,9 @@ export default function PokemonCenter({ onClose }: { onClose?: () => void }) {
           <div className="flex flex-wrap gap-4 mt-auto">
             <a href={`mailto:${developerData.contact.email}`} className="panel-interactive flex-1 text-center py-3 bg-primary text-white font-bold pixel-text border-b-4 border-[#8b0000] active:border-b-0 active:translate-y-1">
               EMAIL ME
+            </a>
+            <a href={`tel:${developerData.contact.phone}`} className="panel-interactive flex-1 text-center py-3 bg-accent text-black font-bold pixel-text border-b-4 border-[#a67c00] active:border-b-0 active:translate-y-1">
+              CALL ME
             </a>
             <a href={developerData.contact.linkedin} target="_blank" rel="noopener noreferrer" className="panel-interactive flex-1 text-center py-3 bg-secondary text-white font-bold pixel-text border-b-4 border-[#1a365d] active:border-b-0 active:translate-y-1">
               LINKEDIN

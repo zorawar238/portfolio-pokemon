@@ -1,13 +1,14 @@
 'use client';
 
+import { developerData } from '@/data/developer';
+
 export default function GameMenu({ onLocationClick }: { onLocationClick?: (id: string) => void }) {
   const menuItems = [
     { label: 'OVERWORLD', hash: '#intro' },
     { label: 'ABOUT ME', hash: '#about' },
     { label: 'SKILLS', hash: '#skills' },
     { label: 'PROJECTS', hash: '#projects' },
-    { label: 'JOURNEY', hash: '#journey' },
-    { label: 'BADGES', hash: '#badges' },
+    { label: 'JOURNEY & BADGES', hash: '#journey' },
     { label: 'CONTACT', hash: '#contact' },
     { label: 'RESUME', hash: '#resume' },
   ];
@@ -22,11 +23,11 @@ export default function GameMenu({ onLocationClick }: { onLocationClick?: (id: s
               <button 
                 className="pixel-text text-[10px] text-text hover:text-primary w-full text-left flex items-center gap-2 group"
                 onClick={() => {
-                   if (item.hash.startsWith('#') && onLocationClick) {
-                     const id = item.hash.substring(1);
-                     if (id !== 'intro' && id !== 'resume') {
-                        onLocationClick(id);
-                     }
+                   const id = item.hash.substring(1);
+                   if (id === 'resume') {
+                     window.open(developerData.resumeUrl, '_blank', 'noopener,noreferrer');
+                   } else if (id !== 'intro' && onLocationClick) {
+                     onLocationClick(id);
                    }
                 }}
               >

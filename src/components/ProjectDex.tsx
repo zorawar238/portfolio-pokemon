@@ -13,7 +13,7 @@ export default function ProjectDex({ onClose }: { onClose?: () => void }) {
     : projectsData.filter(p => p.category === activeCategory);
 
   return (
-    <div className="fixed top-16 left-0 right-0 bottom-0 z-50 flex items-end justify-center overflow-hidden bg-black/40">
+    <div className="fixed top-16 left-0 right-0 bottom-0 z-50 flex items-end justify-center overflow-hidden bg-black/40 pointer-events-auto">
       
       {/* Pokedex Outer Casing - Docked to bottom, full width/height */}
       <div className="bg-[#dc0a2d] w-full max-w-[1800px] h-full flex flex-col md:flex-row relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t-4 border-black/10">
@@ -22,7 +22,7 @@ export default function ProjectDex({ onClose }: { onClose?: () => void }) {
         <button onClick={onClose} className="absolute top-4 right-4 text-white bg-error hover:bg-error/80 px-3 py-1 rounded-sm border-2 border-panel-border shadow-sm z-50 pixel-text text-sm transition-colors">X</button>
           
           {/* Left Half (Screen + List) */}
-          <div className="flex-1 flex flex-col p-6 md:p-10 pb-6">
+          <div className="flex-1 min-w-0 flex flex-col p-6 md:p-10 pb-6">
             
             {/* Screen Bezel */}
             <div className="bg-[#dedede] p-6 rounded-3xl mb-8 flex-1 flex flex-col relative shadow-[inset_0_0_10px_rgba(0,0,0,0.1)]">
@@ -109,18 +109,18 @@ export default function ProjectDex({ onClose }: { onClose?: () => void }) {
           </div>
 
           {/* Right Half (Details Screen) */}
-          <div className="flex-1 flex flex-col p-6 md:p-10 pb-6">
-            
+          <div className="flex-1 min-w-0 flex flex-col p-6 md:p-10 pb-6">
+
             {/* Info Screen */}
-            <div className="bg-[#222] p-6 rounded-2xl flex-1 flex flex-col relative shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] border-2 border-black/50">
-              
+            <div className="bg-[#222] p-6 rounded-2xl flex-1 min-w-0 flex flex-col relative shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] border-2 border-black/50">
+
               {selectedProject ? (
-                <div className="flex flex-col h-full text-white">
-                  
+                <div className="flex flex-col h-full min-w-0 text-white">
+
                   {/* Header Title */}
                   <div className="border-b-2 border-white/20 pb-4 mb-5 shrink-0">
-                    <div className="flex justify-between items-end mb-2">
-                      <h3 className="text-xl md:text-2xl font-bold pixel-text text-white tracking-wide truncate pr-2">{selectedProject.name}</h3>
+                    <div className="flex justify-between items-end mb-2 gap-2">
+                      <h3 className="min-w-0 text-xl md:text-2xl font-bold pixel-text text-white tracking-wide truncate">{selectedProject.name}</h3>
                       <span className="font-mono text-xs md:text-sm opacity-80 shrink-0">No. {selectedProject.projectNumber}</span>
                     </div>
                     <div className="flex gap-2">
@@ -142,7 +142,7 @@ export default function ProjectDex({ onClose }: { onClose?: () => void }) {
                   </div>
 
                   {/* Details Scroll Area */}
-                  <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
+                  <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar font-sans text-xs md:text-sm text-gray-300 leading-relaxed break-words">
                     <p className="mb-4">{selectedProject.overview}</p>
                     
                     <div className="grid grid-cols-2 gap-2 mb-4 font-mono text-[10px] md:text-xs">
@@ -159,6 +159,25 @@ export default function ProjectDex({ onClose }: { onClose?: () => void }) {
                           </span>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Case Study Log */}
+                    <div className="space-y-3 border-t border-white/10 pt-3">
+                      {[
+                        { label: 'PROBLEM', text: selectedProject.problem },
+                        { label: 'GOAL', text: selectedProject.goal },
+                        { label: 'APPROACH', text: selectedProject.uxApproach },
+                        { label: 'ARCHITECTURE', text: selectedProject.architecture },
+                        { label: 'CHALLENGES', text: selectedProject.challenges },
+                        { label: 'SOLUTIONS', text: selectedProject.solutions },
+                        { label: 'RESULTS', text: selectedProject.results },
+                        { label: 'LEARNINGS', text: selectedProject.learnings },
+                      ].map(field => (
+                        <div key={field.label}>
+                          <span className="text-gray-500 font-mono text-[10px] md:text-xs block mb-1">{field.label}:</span>
+                          <p>{field.text}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
 

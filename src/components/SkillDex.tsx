@@ -38,14 +38,13 @@ export default function SkillDex({ onClose }: { onClose?: () => void }) {
   const filteredSkills = skillsData.filter(skill => skill.category === activeCategory);
 
   return (
-    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center p-4 md:p-8 z-50 overflow-hidden">
+    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center p-4 md:p-8 z-50 overflow-hidden pointer-events-auto">
       <div className="w-full max-w-5xl h-full max-h-[700px] flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
-        
-        {/* Close Button */}
-        <button onClick={onClose} className="absolute -top-12 right-0 md:-top-4 md:-right-4 text-white bg-error hover:bg-error/80 px-3 py-1 rounded-full border-4 border-white shadow-lg z-50 pixel-text text-sm transition-transform hover:scale-110">X</button>
         
         {/* Main Bag UI Container */}
         <div className="flex-1 bg-[#4a90e2] rounded-t-2xl border-4 border-[#1d3557] overflow-hidden flex flex-col md:flex-row relative shadow-[inset_0_0_20px_rgba(0,0,0,0.3)]">
+           {/* Close Button */}
+           <button onClick={onClose} className="absolute top-4 right-4 text-white bg-error hover:bg-error/80 px-3 py-1 rounded-sm border-2 border-white shadow-sm z-50 pixel-text text-sm transition-colors">X</button>
            {/* Background subtle pattern */}
            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
            

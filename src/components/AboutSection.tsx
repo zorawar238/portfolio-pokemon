@@ -7,7 +7,7 @@ export default function AboutSection({ onClose }: { onClose?: () => void }) {
   const [activeTab, setActiveTab] = useState<'MY STORY' | 'PHILOSOPHY' | 'CURRENT QUEST'>('MY STORY');
 
   return (
-    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center p-4 md:p-8 z-50 overflow-hidden">
+    <div className="fixed top-16 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center p-4 md:p-8 z-50 overflow-hidden pointer-events-auto">
       <div className="w-full max-w-5xl bg-[#f8f0e3] rounded-lg border-4 border-[#1d3557] overflow-hidden flex flex-col md:flex-row shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative animate-in fade-in zoom-in-95 duration-200">
         
         {/* Close Button */}

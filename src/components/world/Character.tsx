@@ -1,6 +1,7 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
+import { playFootstepSound } from '@/utils/audio';
 
 interface CharacterProps {
   direction: 'up' | 'down' | 'left' | 'right';
@@ -10,35 +11,60 @@ interface CharacterProps {
   className?: string;
 }
 
+// 4-frame walk cycle per direction, sliced from the hand-drawn reference sheet
+const spriteFrames: Record<'up' | 'down' | 'left' | 'right', [string, string, string, string]> = {
+  down: ['/assets/character_down_f1.png', '/assets/character_down_f2.png', '/assets/character_down_f3.png', '/assets/character_down_f4.png'],
+  up: ['/assets/character_up_f1.png', '/assets/character_up_f2.png', '/assets/character_up_f3.png', '/assets/character_up_f4.png'],
+  left: ['/assets/character_left_f1.png', '/assets/character_left_f2.png', '/assets/character_left_f3.png', '/assets/character_left_f4.png'],
+  right: ['/assets/character_right_f1.png', '/assets/character_right_f2.png', '/assets/character_right_f3.png', '/assets/character_right_f4.png']
+};
+
+const WALK_FRAME_INTERVAL = 130; // ms per step frame
+
 const Character = forwardRef<HTMLDivElement, CharacterProps>(
-  ({ direction, isWalking, x = 50, y = 50, className = '' }, ref) => {
-    // For now, we'll use CSS to draw a simple placeholder pixel character
-    // until the user provides a real sprite sheet.
-    
+  ({ direction = 'down', isWalking, x = 50, y = 50, className = '' }, ref) => {
+    const [frame, setFrame] = useState<0 | 1 | 2 | 3>(0);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    useEffect(() => {
+      if (isWalking) {
+        intervalRef.current = setInterval(() => {
+          setFrame(f => {
+            const next = ((f + 1) % 4) as 0 | 1 | 2 | 3;
+            // Two ground-contact frames per cycle (1 and 3) get a footstep sound
+            if (next === 1 || next === 3) playFootstepSound();
+            return next;
+          });
+        }, WALK_FRAME_INTERVAL);
+      } else {
+        setFrame(0);
+      }
+      return () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      };
+    }, [isWalking]);
+
+    const currentSprite = spriteFrames[direction][frame];
+
     return (
-      <div 
-        ref={ref} 
+      <div
+        ref={ref}
         className={`absolute z-30 ${className}`}
-        style={{ 
-          width: '48px', 
-          height: '48px',
+        style={{
+          width: '72px',
+          height: '72px',
           left: `${x}%`,
           top: `${y}%`,
-          transform: 'translate(-50%, -50%)',
-          // smooth movement interpolation
-          transition: 'left 0.1s linear, top 0.1s linear'
+          transform: 'translate(-50%, -50%)'
         }}
       >
-        {/* Generated Character Sprite */}
-        <div className={`w-full h-full relative ${isWalking ? 'animate-bounce' : ''}`}>
-           <img 
-             src="/assets/character_sprite.png" 
-             alt="Character" 
-             className="w-full h-full object-cover rounded-md drop-shadow-md"
-             style={{ imageRendering: 'pixelated' }}
-           />
-           {/* Shadow */}
-           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-3 bg-black/40 rounded-full blur-[2px] -z-10"></div>
+        <div className="w-full h-full relative">
+          <img
+            src={currentSprite}
+            alt={`Character facing ${direction}`}
+            className="w-full h-full object-contain drop-shadow-md"
+            style={{ imageRendering: 'pixelated' }}
+          />
         </div>
       </div>
     );

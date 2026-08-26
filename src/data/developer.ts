@@ -9,6 +9,7 @@ export interface DeveloperProfile {
   philosophy: string[];
   contact: {
     email: string;
+    phone: string;
     github: string;
     linkedin: string;
     twitter?: string;
@@ -18,14 +19,14 @@ export interface DeveloperProfile {
 
 export const developerData: DeveloperProfile = {
   name: 'Nishant Kumar',
-  class: 'Web Developer',
-  specialization: 'UI/UX + Frontend',
-  currentFocus: ['Full Stack', 'AI', 'Agentic AI'],
-  location: 'India',
+  class: 'Full-Stack Developer',
+  specialization: 'Full-Stack Web Development',
+  currentFocus: ['React.js', 'Node.js', 'Full Stack'],
+  location: 'Bengaluru, India',
   status: 'Available for opportunities',
   bio: [
-    'I am a passionate web developer focused on building interactive, premium user experiences.',
-    'I combine technical frontend skills with a strong eye for visual design to create memorable digital products.'
+    'Computer Science undergraduate at Jain University building full-stack web applications across frontend, backend, and database layers.',
+    'Experienced in developing responsive e-commerce workflows, admin dashboards, authentication, media uploads, and order management, with internship exposure to full-stack development.'
   ],
   philosophy: [
     'DESIGN FIRST',
@@ -36,9 +37,10 @@ export const developerData: DeveloperProfile = {
     'CURIOUS'
   ],
   contact: {
-    email: 'hello@example.com', // TODO: Update with real email
-    github: 'https://github.com', // TODO: Update with real GitHub
-    linkedin: 'https://linkedin.com', // TODO: Update with real LinkedIn
+    email: 'nishantkr238@gmail.com',
+    phone: '+91-9101870695',
+    github: 'https://github.com/zorawar238',
+    linkedin: 'https://www.linkedin.com/in/nishant-kumar-23205331a/',
   },
-  resumeUrl: '/resume.pdf' // TODO: Update with actual resume path
+  resumeUrl: '/resume.docx'
 };

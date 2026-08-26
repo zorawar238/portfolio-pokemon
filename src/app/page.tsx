@@ -108,7 +108,7 @@ export default function Home() {
           />
         )}
 
-        <WorldMap onLocationClick={handleLocationClick}>
+        <WorldMap onLocationClick={handleLocationClick} isOverlayOpen={activeOverlay !== null}>
           {/* Overlays */}
           {activeOverlay === 'about' && <AboutSection onClose={() => handleLocationClick(null)} />}
           {activeOverlay === 'skills' && <SkillDex onClose={() => handleLocationClick(null)} />}
