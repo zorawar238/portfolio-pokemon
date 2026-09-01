@@ -126,6 +126,126 @@ export const playAchievementSound = () => {
   });
 };
 
+// Background Music State
+let bgmGainNode: GainNode | null = null;
+let bgmInterval: ReturnType<typeof setInterval> | null = null;
+export let isPlayingBgm = false;
+let nextNoteTime = 0;
+let currentNote = 0;
+
+export const toggleBackgroundMusic = () => {
+  if (isPlayingBgm) {
+    stopBackgroundMusic();
+  } else {
+    playBackgroundMusic();
+  }
+};
+
+export const stopBackgroundMusic = () => {
+  isPlayingBgm = false;
+  if (bgmInterval) {
+    clearInterval(bgmInterval);
+    bgmInterval = null;
+  }
+  
+  if (bgmGainNode) {
+    // Fade out
+    const ctx = getAudioContext();
+    if (ctx) {
+      bgmGainNode.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
+      setTimeout(() => {
+        if (bgmGainNode) {
+          bgmGainNode.disconnect();
+          bgmGainNode = null;
+        }
+      }, 200);
+    }
+  }
+};
+
+export const playBackgroundMusic = () => {
+  const ctx = getAudioContext();
+  if (!ctx || ctx.state !== 'running' || isPlayingBgm) return;
+  isPlayingBgm = true;
+
+  bgmGainNode = ctx.createGain();
+  bgmGainNode.gain.value = 0.05; // Master BGM volume
+  bgmGainNode.connect(ctx.destination);
+
+  // Pokemon-style high-energy 8-bit battle/route track (BPM 150)
+  const bpm = 150;
+  const tickLength = (60 / bpm) / 4; // 16th note duration = 0.1s
+  
+  // Melody track
+  const melody = [
+    // Measure 1
+    523.25, 0, 523.25, 659.25, 783.99, 0, 1046.50, 0,
+    783.99, 0, 659.25, 0, 523.25, 0, 0, 0,
+    // Measure 2
+    587.33, 0, 587.33, 698.46, 880.00, 0, 1174.66, 0,
+    880.00, 0, 698.46, 0, 587.33, 0, 0, 0,
+    // Measure 3
+    659.25, 0, 783.99, 0, 1046.50, 0, 1318.51, 0,
+    1046.50, 0, 783.99, 0, 659.25, 0, 0, 0,
+    // Measure 4
+    698.46, 783.99, 880.00, 1046.50, 1174.66, 0, 0, 0,
+    1046.50, 1174.66, 1318.51, 1567.98, 0, 0, 0, 0
+  ];
+  
+  // Bass track
+  const bass = [
+    130.81, 130.81, 130.81, 130.81, 130.81, 130.81, 130.81, 130.81,
+    130.81, 130.81, 130.81, 130.81, 130.81, 130.81, 130.81, 130.81,
+    
+    146.83, 146.83, 146.83, 146.83, 146.83, 146.83, 146.83, 146.83,
+    146.83, 146.83, 146.83, 146.83, 146.83, 146.83, 146.83, 146.83,
+    
+    164.81, 164.81, 164.81, 164.81, 164.81, 164.81, 164.81, 164.81,
+    164.81, 164.81, 164.81, 164.81, 164.81, 164.81, 164.81, 164.81,
+    
+    174.61, 0, 174.61, 0, 196.00, 0, 196.00, 0,
+    130.81, 0, 130.81, 0, 130.81, 0, 130.81, 0
+  ];
+
+  currentNote = 0;
+  nextNoteTime = ctx.currentTime + 0.1;
+
+  const playNote = (time: number, freq: number, type: OscillatorType, dur: number, vol: number) => {
+    if (freq === 0) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + dur * 0.9);
+    
+    osc.connect(gain);
+    gain.connect(bgmGainNode!);
+    
+    osc.start(time);
+    osc.stop(time + dur);
+  };
+
+  const scheduler = () => {
+    if (!isPlayingBgm) return;
+    while (nextNoteTime < ctx.currentTime + 0.1) {
+      const melNote = melody[currentNote];
+      const bassNote = bass[currentNote];
+
+      // Play melody
+      playNote(nextNoteTime, melNote, 'square', tickLength, 0.4);
+      // Play bass
+      playNote(nextNoteTime, bassNote, 'triangle', tickLength, 0.6);
+
+      nextNoteTime += tickLength;
+      currentNote = (currentNote + 1) % melody.length;
+    }
+  };
+
+  bgmInterval = setInterval(scheduler, 25);
+};
+
 // Resume AudioContext on first user interaction
 export const initAudio = () => {
   const ctx = getAudioContext();

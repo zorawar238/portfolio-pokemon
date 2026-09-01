@@ -1,13 +1,24 @@
 'use client';
 
-import { useEffect } from 'react';
-import { playHoverSound, playClickSound, initAudio } from '@/utils/audio';
+import { useEffect, useState, useRef } from 'react';
+import { playHoverSound, playClickSound, initAudio, playBackgroundMusic, toggleBackgroundMusic } from '@/utils/audio';
+import { Volume2, VolumeX } from 'lucide-react';
 
 export default function AudioWrapper({ children }: { children: React.ReactNode }) {
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const startedMusic = useRef(false);
+
   useEffect(() => {
     // A quick hack to allow audio after first interaction
     const handleFirstInteraction = () => {
       initAudio();
+      
+      if (!startedMusic.current) {
+        startedMusic.current = true;
+        playBackgroundMusic();
+        setIsMusicPlaying(true);
+      }
+
       window.removeEventListener('click', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
     };
@@ -50,5 +61,27 @@ export default function AudioWrapper({ children }: { children: React.ReactNode }
     };
   }, []);
 
-  return <>{children}</>;
+  const handleToggleMusic = () => {
+    toggleBackgroundMusic();
+    setIsMusicPlaying(!isMusicPlaying);
+  };
+
+  return (
+    <>
+      {children}
+      
+      {/* Background Music Toggle Button */}
+      <button
+        onClick={handleToggleMusic}
+        className="fixed bottom-6 right-6 z-[9999] p-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full shadow-lg hover:bg-black/60 transition-all group flex items-center justify-center cursor-pointer"
+        aria-label="Toggle Background Music"
+      >
+        {isMusicPlaying ? (
+          <Volume2 className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
+        ) : (
+          <VolumeX className="w-6 h-6 text-white/70" />
+        )}
+      </button>
+    </>
+  );
 }
