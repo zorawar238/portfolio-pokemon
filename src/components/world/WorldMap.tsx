@@ -23,7 +23,7 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
   const [direction, setDirection] = useState<'up' | 'down' | 'left' | 'right'>('down');
   const [isWalking, setIsWalking] = useState(false);
   const [pos, setPos] = useState({ x: 50, y: 50 });
-  const [dialogue, setDialogue] = useState({ text: "Hey! I'm Nishant. Welcome to my portfolio. Explore around!", isVisible: true });
+  const [dialogue, setDialogue] = useState({ text: "", isVisible: false });
 
   const keys = useRef<{ [key: string]: boolean }>({});
   const posRef = useRef({ x: 50, y: 50 });
