@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Character from './Character';
 import TrainerCard from '../ui/TrainerCard';
 import GameMenu from '../ui/GameMenu';
-import DialogueBox from '../ui/DialogueBox';
 import TouchControls from '../ui/TouchControls';
 import { buildingsData } from '@/data/buildings';
 import { playDoorChimeSound } from '@/utils/audio';
@@ -23,7 +22,12 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
   const [direction, setDirection] = useState<'up' | 'down' | 'left' | 'right'>('down');
   const [isWalking, setIsWalking] = useState(false);
   const [pos, setPos] = useState({ x: 50, y: 50 });
-  const [dialogue, setDialogue] = useState({ text: "", isVisible: false });
+  const [showWelcome, setShowWelcomeState] = useState(true);
+  const showWelcomeRef = useRef(true);
+  const setShowWelcome = (val: boolean) => {
+    showWelcomeRef.current = val;
+    setShowWelcomeState(val);
+  };
 
   const keys = useRef<{ [key: string]: boolean }>({});
   const posRef = useRef({ x: 50, y: 50 });
@@ -66,8 +70,8 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
   };
 
   const handleInteract = () => {
-    if (dialogue.isVisible) {
-      setDialogue(d => ({ ...d, isVisible: false }));
+    if (showWelcome) {
+      setShowWelcome(false);
     }
   };
 
@@ -100,7 +104,7 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
       const dt = Math.min(deltaTime, 50) / 1000;
       const step = SPEED * dt;
 
-      if (!isOverlayOpenRef.current) {
+      if (!isOverlayOpenRef.current && !showWelcomeRef.current) {
         let dx = 0;
         let dy = 0;
         let newDir = direction;
@@ -225,11 +229,35 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
         <div className="absolute inset-0 pointer-events-none z-40">
           <TrainerCard />
           <GameMenu onLocationClick={onLocationClick} />
-          <DialogueBox
-            text={dialogue.text}
-            isVisible={dialogue.isVisible}
-            onComplete={() => setDialogue({ ...dialogue, isVisible: false })}
-          />
+          {showWelcome && (
+            <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/60 pointer-events-auto">
+              <div className="bg-[#f8f0e3] border-4 border-[#1d3557] rounded-lg p-6 max-w-lg w-[90%] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
+                <div className="flex justify-between items-center mb-4 border-b-2 border-[#1d3557] pb-2">
+                  <h2 className="pixel-text text-xl text-[#1d3557]">WELCOME!</h2>
+                  <button onClick={() => setShowWelcome(false)} className="text-white bg-error hover:bg-error/80 px-2 py-1 rounded-sm border-2 border-panel-border pixel-text text-xs">X</button>
+                </div>
+                <div className="font-mono text-sm md:text-base text-[#1d3557] space-y-4 leading-relaxed">
+                  <p>
+                    Hey! This is <strong>Nishant's portfolio</strong>, reimagined as a classic Pokémon game.
+                  </p>
+                  <p>
+                    I built this entirely from scratch—no templates, just pure imagination and code!
+                  </p>
+                  <p>
+                    Use <span className="bg-[#1d3557] text-[#f8f0e3] px-1 rounded">WASD</span> or <span className="bg-[#1d3557] text-[#f8f0e3] px-1 rounded">Arrow Keys</span> to navigate. On mobile, use the on-screen controls.
+                  </p>
+                  <p>
+                    Walk into buildings to explore! Visit the <strong>About Section</strong> to know my story, check out the <strong>Skills Lab</strong> to see my tech stack, and more. Have fun exploring!
+                  </p>
+                </div>
+                <div className="mt-6 flex justify-end">
+                  <button onClick={() => setShowWelcome(false)} className="bg-[#1d3557] text-[#f8f0e3] pixel-text px-4 py-2 rounded shadow-[0_4px_0_#0f1c2e] active:shadow-[0_0px_0_#0f1c2e] active:translate-y-1 transition-all">
+                    GOT IT!
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {children}
 
           {!isOverlayOpen && (
