@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Character from './Character';
-import GameMenu from '../ui/GameMenu';
 import TouchControls from '../ui/TouchControls';
 import { buildingsData } from '@/data/buildings';
 import { playDoorChimeSound } from '@/utils/audio';
@@ -247,7 +246,6 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
 
         {/* UI Layer (Fixed over map) */}
         <div className="absolute inset-0 pointer-events-none z-40">
-          <GameMenu onLocationClick={onLocationClick} />
           {showWelcome && (
             <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/60 pointer-events-auto">
               <div className="bg-[#f8f0e3] border-4 border-[#1d3557] rounded-lg p-6 max-w-lg w-[90%] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300">
