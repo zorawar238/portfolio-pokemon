@@ -145,7 +145,6 @@ export const stopBackgroundMusic = () => {
   if (bgmAudio) {
     // Fade out effect can be tricky with HTMLAudioElement, so we just pause
     bgmAudio.pause();
-    bgmAudio.currentTime = 0;
   }
 };
 

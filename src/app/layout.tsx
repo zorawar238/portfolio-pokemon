@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import AudioWrapper from "@/components/AudioWrapper";
+import RotatePrompt from "@/components/ui/RotatePrompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,6 +51,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${pressStart2P.variable} antialiased scroll-smooth`}>
       <body className="h-screen w-screen overflow-hidden flex flex-col relative selection:bg-primary selection:text-white bg-background">
         <AudioWrapper>
+          <RotatePrompt />
           <Navigation />
           <main className="flex-1 w-full h-full relative">
             {children}
