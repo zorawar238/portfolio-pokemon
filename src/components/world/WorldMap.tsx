@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Character from './Character';
-import TrainerCard from '../ui/TrainerCard';
 import GameMenu from '../ui/GameMenu';
 import TouchControls from '../ui/TouchControls';
 import { buildingsData } from '@/data/buildings';
@@ -19,9 +18,31 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
   const mapRef = useRef<HTMLDivElement>(null);
   const charRef = useRef<HTMLDivElement>(null);
 
-  const [direction, setDirection] = useState<'up' | 'down' | 'left' | 'right'>('down');
+  const [direction, setDirectionState] = useState<'up' | 'down' | 'left' | 'right'>('down');
+  const directionRef = useRef<'up' | 'down' | 'left' | 'right'>('down');
+  const setDirection = (dir: 'up' | 'down' | 'left' | 'right') => {
+    if (directionRef.current !== dir) {
+      directionRef.current = dir;
+      setDirectionState(dir);
+    }
+  };
+
   const [isWalking, setIsWalking] = useState(false);
-  const [pos, setPos] = useState({ x: 50, y: 50 });
+  const isWalkingRef = useRef(false);
+  const updateIsWalking = (walking: boolean) => {
+    if (isWalkingRef.current !== walking) {
+      isWalkingRef.current = walking;
+      setIsWalking(walking);
+    }
+  };
+
+  const [pos, setPosState] = useState({ x: 50, y: 50 });
+  const posRef = useRef({ x: 50, y: 50 });
+  const setPos = (newPos: { x: number, y: number }) => {
+    posRef.current = newPos;
+    setPosState(newPos);
+  };
+
   const [showWelcome, setShowWelcomeState] = useState(true);
   const showWelcomeRef = useRef(true);
   const setShowWelcome = (val: boolean) => {
@@ -30,7 +51,6 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
   };
 
   const keys = useRef<{ [key: string]: boolean }>({});
-  const posRef = useRef({ x: 50, y: 50 });
   const requestRef = useRef<number>(0);
   const isOverlayOpenRef = useRef(false);
 
@@ -70,7 +90,7 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
   };
 
   const handleInteract = () => {
-    if (showWelcome) {
+    if (showWelcomeRef.current) {
       setShowWelcome(false);
     }
   };
@@ -81,8 +101,7 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
 
     // If we just closed an overlay, recenter the character and let movement resume
     if (wasOpen && !isOverlayOpen) {
-      posRef.current = { x: 50, y: 50 };
-      setPos(posRef.current);
+      setPos({ x: 50, y: 50 });
       setDirection('down');
       keys.current = {};
     }
@@ -95,19 +114,21 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
-    let lastTime = performance.now();
+    let lastTime: number | null = null;
 
     const gameLoop = (time: number) => {
+      if (lastTime === null) lastTime = time;
       const deltaTime = time - lastTime;
       lastTime = time;
+      
       // Clamp so resuming from a backgrounded tab doesn't teleport the character
-      const dt = Math.min(deltaTime, 50) / 1000;
+      const dt = Math.min(Math.max(0, deltaTime), 50) / 1000;
       const step = SPEED * dt;
 
       if (!isOverlayOpenRef.current && !showWelcomeRef.current) {
         let dx = 0;
         let dy = 0;
-        let newDir = direction;
+        let newDir = directionRef.current;
 
         if (keys.current['w'] || keys.current['arrowup']) { dy -= step; newDir = 'up'; }
         if (keys.current['s'] || keys.current['arrowdown']) { dy += step; newDir = 'down'; }
@@ -152,17 +173,16 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
           }
 
           if (canMove) {
-            posRef.current = { x: newX, y: newY };
-            setPos(posRef.current);
+            setPos({ x: newX, y: newY });
           }
 
           setDirection(newDir);
-          setIsWalking(true);
+          updateIsWalking(true);
         } else {
-          setIsWalking(false);
+          updateIsWalking(false);
         }
       } else {
-        setIsWalking(false);
+        updateIsWalking(false);
       }
 
       requestRef.current = requestAnimationFrame(gameLoop);
@@ -175,7 +195,7 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
       window.removeEventListener('keyup', handleKeyUp);
       cancelAnimationFrame(requestRef.current);
     };
-  }, [direction]);
+  }, []);
 
   return (
     <div className="relative w-full h-screen bg-[#111] overflow-hidden flex items-center justify-center">
@@ -227,7 +247,6 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
 
         {/* UI Layer (Fixed over map) */}
         <div className="absolute inset-0 pointer-events-none z-40">
-          <TrainerCard />
           <GameMenu onLocationClick={onLocationClick} />
           {showWelcome && (
             <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/60 pointer-events-auto">
@@ -241,7 +260,7 @@ export default function WorldMap({ onLocationClick, isOverlayOpen = false, child
                     Hey! This is <strong>Nishant's portfolio</strong>, reimagined as a classic Pokémon game.
                   </p>
                   <p>
-                    I built this entirely from scratch—no templates, just pure imagination and code!
+                    I built this entirely from scratch—no templates, just pure imagination and AI-assisted development!
                   </p>
                   <p>
                     Use <span className="bg-[#1d3557] text-[#f8f0e3] px-1 rounded">WASD</span> or <span className="bg-[#1d3557] text-[#f8f0e3] px-1 rounded">Arrow Keys</span> to navigate. On mobile, use the on-screen controls.

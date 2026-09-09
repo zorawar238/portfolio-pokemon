@@ -9,14 +9,28 @@ export default function AudioWrapper({ children }: { children: React.ReactNode }
   const startedMusic = useRef(false);
 
   useEffect(() => {
-    // A quick hack to allow audio after first interaction
-    const handleFirstInteraction = () => {
-      initAudio();
-      
+    // Attempt auto-play immediately on mount
+    const tryAutoStart = async () => {
       if (!startedMusic.current) {
         startedMusic.current = true;
-        playBackgroundMusic();
-        setIsMusicPlaying(true);
+        const success = await playBackgroundMusic();
+        if (success) {
+          setIsMusicPlaying(true);
+        }
+      }
+    };
+    tryAutoStart();
+
+    // A quick hack to allow audio after first interaction if auto-play fails
+    const handleFirstInteraction = async () => {
+      initAudio();
+      
+      // If we haven't successfully started music yet, try again
+      if (!isMusicPlaying) {
+        const success = await playBackgroundMusic();
+        if (success) {
+          setIsMusicPlaying(true);
+        }
       }
 
       window.removeEventListener('click', handleFirstInteraction);
@@ -59,11 +73,11 @@ export default function AudioWrapper({ children }: { children: React.ReactNode }
       window.removeEventListener('click', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
     };
-  }, []);
+  }, [isMusicPlaying]);
 
-  const handleToggleMusic = () => {
-    toggleBackgroundMusic();
-    setIsMusicPlaying(!isMusicPlaying);
+  const handleToggleMusic = async () => {
+    const isPlayingNow = await toggleBackgroundMusic();
+    setIsMusicPlaying(isPlayingNow);
   };
 
   return (
